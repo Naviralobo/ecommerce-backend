@@ -1,8 +1,12 @@
 const express = require("express");
 
+const {greet,pi} = require("./utils");
+
 const app = express();
 
 app.get("/", (req, res) => {
+  greet("navira");
+
   res.json({ message: "Welcome to the homepage!" });
   // res.send("Welcome to the homepage!");
 });
