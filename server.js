@@ -1,8 +1,18 @@
 const express = require("express");
 
 const {greet,pi} = require("./utils");
+const authMiddleware = require("./middleware/auth");
+const adminMiddleware = require("./middleware/admin");
 
 const app = express();
+
+app.use(express.json());
+app.use(authMiddleware);
+app.use(adminMiddleware);
+
+app.get("/admin", (req, res) => {
+  res.json({ message: "Welcome to the admin page!" });
+});
 
 app.get("/", (req, res) => {
   greet("navira");
