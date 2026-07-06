@@ -14,10 +14,6 @@ app.get("/admin", (req, res) => {
   res.json({ message: "Welcome to the admin page!" });
 });
 
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the homepage!" });
-});
-
 app.use("/products", productRoutes);
 
 app.use((req, res) => {
@@ -26,7 +22,7 @@ app.use((req, res) => {
 
 // Connect to MongoDB-always keep it just above the server
 mongoose
-  .connect(process.env.MONGO_DB_URL)
+  .connect(`mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.zp72w3s.mongodb.net/${process.env.MONGO_DB_NAME}`)
   .then(() => {
     console.log("Connected to MongoDB", process.env.MONGO_DB_URL);
   })
