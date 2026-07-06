@@ -25,6 +25,7 @@ const productSchema = new mongoose.Schema({
   //     type: String,
   //     required: true,
   //   },
+  //it can be description:String format as well, but we are using object format to add validation and other properties
 });
 
 module.exports = mongoose.model("Product", productSchema);
