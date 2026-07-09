@@ -5,6 +5,7 @@ const { getAllProducts } = require("./controllers/productController");
 const app = express();
 
 const productRoutes = require("./routes/product");
+const uploadRoutes = require("./routes/upload");
 
 require("dotenv").config();
 
@@ -15,6 +16,7 @@ app.get("/admin", (req, res) => {
 });
 
 app.use("/products", productRoutes);
+app.use("/upload", uploadRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Page not found" });
@@ -33,5 +35,5 @@ mongoose
     //connect only if db connection is successful, else it will throw error and server will not start
   })
   .catch((error) => {
-    console.error("Error connecting to MongoDB:", process.env.MONGO_DB_URL);
+    console.log("Error connecting to MongoDB:", process.env.MONGO_DB_URL);
   });
