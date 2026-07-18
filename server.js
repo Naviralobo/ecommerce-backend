@@ -1,14 +1,23 @@
 const express = require("express");
 const mongoose = require("mongoose");
+
+const path = require("path");
 const { getAllProducts } = require("./controllers/productController");
 
 const app = express();
 
 const productRoutes = require("./routes/product");
 const uploadRoutes = require("./routes/upload");
+// const userRoutes = require("./routes/user");
+// const dashboardRoutes = require("./routes/dashboard");
+// const authRoutes = require("./routes/auth");
 
 require("dotenv").config();
 
+app.set("view engine", "pug");//set pug as template engine
+app.set("views", path.join(__dirname, "views"));//from where to access template engines
+
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/admin", (req, res) => {
@@ -17,6 +26,9 @@ app.get("/admin", (req, res) => {
 
 app.use("/products", productRoutes);
 app.use("/upload", uploadRoutes);
+// app.use("/users",userRoutes)
+// app.use("/dashboard",dashboardRoutes)
+// app.use(authRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ error: "Page not found" });

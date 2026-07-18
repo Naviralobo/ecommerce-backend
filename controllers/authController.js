@@ -28,6 +28,7 @@ exports.signup = async (req, res) => {
 
     const token = generateToken(user); // Generate JWT token for the user
     res.status(201).json({ message: "User created successfully", user, token });
+    res.redirect("/");
   } catch (error) {
     logger.error("Error during signup", {
       error: error.message,
@@ -50,6 +51,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid email or password" });
     }
     res.status(200).json({ message: "Login successful", user });
+    res.redirect("/");
   } catch (error) {
     logger.error("Error during login", {
       error: error.message,

@@ -1,0 +1,107 @@
+doctype html
+html
+  head
+    title= title
+    style.
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        width: 380px;
+        background: white;
+        padding: 35px;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+      }
+
+      .form-group {
+        margin-bottom: 18px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: #555;
+        font-weight: bold;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+      }
+
+      input:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 5px rgba(76,175,80,0.3);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      button:hover {
+        background: #0056b3;
+      }
+
+      p {
+        text-align: center;
+        margin-top: 18px;
+      }
+
+      a {
+        color: #007BFF;
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+  body
+    .container
+      h1 Login
+
+      form(action="/login" method="post")
+        .form-group
+          label(for="email") Email
+          input#email(type="email" name="email" placeholder="Enter your email" required)
+
+        .form-group
+          label(for="password") Password
+          input#password(type="password" name="password" placeholder="Enter your password" required)
+
+        button(type="submit") Login
+
+      p
+        | Don't have an account?
+        a(href="/signup")  Sign Up
