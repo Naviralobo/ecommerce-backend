@@ -49,3 +49,11 @@ mongoose
   .catch((error) => {
     console.log("Error connecting to MongoDB:", process.env.MONGO_DB_URL);
   });
+
+//To run terraform
+//   terraform init
+// terraform plan -var="github_repo=your-github-username/your-repo-name"
+// terraform apply -var="github_repo=your-github-username/your-repo-name"
+
+// set these values before running terraform
+// export TF_VAR_render_api_key="your_render_api_key" in terraform.tfvars.example file

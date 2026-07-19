@@ -1,2 +1,20 @@
 # dependencies
 node_modules/
+
+# Environment variables
+.env
+
+# Log files
+*.log
+
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
