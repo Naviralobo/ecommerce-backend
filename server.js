@@ -8,9 +8,9 @@ const app = express();
 
 const productRoutes = require("./routes/product");
 const uploadRoutes = require("./routes/upload");
-// const userRoutes = require("./routes/user");
-// const dashboardRoutes = require("./routes/dashboard");
-// const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
+const dashboardRoutes = require("./routes/dashboard");
+const authRoutes = require("./routes/auth");
 
 require("dotenv").config();
 
@@ -26,9 +26,9 @@ app.get("/admin", (req, res) => {
 
 app.use("/products", productRoutes);
 app.use("/upload", uploadRoutes);
-// app.use("/users",userRoutes)
-// app.use("/dashboard",dashboardRoutes)
-// app.use(authRoutes)
+app.use("/users",userRoutes)
+app.use("/dashboard",dashboardRoutes)
+app.use(authRoutes)
 
 app.use((req, res) => {
   res.status(404).json({ error: "Page not found" });

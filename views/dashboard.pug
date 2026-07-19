@@ -1,0 +1,45 @@
+doctype html
+html
+  head
+    title= title
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background: #f5f7fa;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+  body
+    .card
+      h1 Dashboard
+      p Welcome to your admin dashboard.
+
+    .card
+      h3 Summary
+      p Total Users: #{totalUsers}
+
+    .card
+      h3 Recent Users
+      if users.length
+        ul
+          each user in users
+            li
+              a(href=`/users/${user._id}`) #{user.name} - #{user.email}
+      else
+        p No users found.
+
+    .card
+      a(href="/users") View All Users
