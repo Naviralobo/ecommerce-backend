@@ -9,7 +9,7 @@ if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory, { recursive: true });
 }
 //to delete files after certain period
-const RETETION_DAYS = Number(process.env.LOG_RETENTION_DAYS) || 7;
+const RETENTION_DAYS = Number(process.env.LOG_RETENTION_DAYS) || 7;
 const RETENTION_MS = RETENTION_DAYS * 24 * 60 * 60 * 1000;
 
 function cleanupOldLogs() {
@@ -35,7 +35,7 @@ const logger = createLogger({
   format: format.combine(
     format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // Add timestamp to logs
     format.errors({ stack: true }), // Include stack trace for errors
-    format.printf(({ timestamp, level, message }) => {
+    format.printf(({ timestamp, level, message, stack, ...meta }) => {
       let output = `${timestamp} [${level.toUpperCase()}]: ${message}`; // Format the log message
       if (Object.keys(meta).length > 0) {
         output += ` ${JSON.stringify(meta)}`;
