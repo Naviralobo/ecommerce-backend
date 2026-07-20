@@ -7,6 +7,8 @@ import userRoutes from "./routes/user";
 import dashboardRoutes from "./routes/dashboard";
 import authRoutes from "./routes/auth";
 
+import { errorHandler } from "./middleware/errorHandler";
+
 const app = express();
 
 app.set("view engine", "pug");
@@ -14,6 +16,7 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(errorHandler);
 
 app.get("/admin", (_, res) => {
   res.json({

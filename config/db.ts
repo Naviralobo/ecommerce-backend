@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
+import {env} from "./env";
 
 const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect(
-      `mongodb+srv://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PASSWORD}@cluster0.zp72w3s.mongodb.net/${process.env.MONGO_DB_NAME}`,
-    );
+    await mongoose.connect(env.MONGO_DB_URL);
 
     console.log("✅ MongoDB Connected");
   } catch (error) {
