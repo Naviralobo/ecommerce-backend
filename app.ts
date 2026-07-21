@@ -1,11 +1,10 @@
 import express from "express";
 import path from "path";
-
-import productRoutes from "./routes/product";
-import uploadRoutes from "./routes/upload";
-import userRoutes from "./routes/user";
-import dashboardRoutes from "./routes/dashboard";
-import authRoutes from "./routes/auth";
+// import productRoutes from "./routes/product.js"
+// import uploadRoutes from "./routes/upload";
+// import userRoutes from "./routes/user";
+// import dashboardRoutes from "./routes/dashboard";
+import authRoutes from "./routes/auth.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -24,11 +23,11 @@ app.get("/admin", (_, res) => {
   });
 });
 
-app.use("/products", productRoutes);
-app.use("/upload", uploadRoutes);
-app.use("/users", userRoutes);
-app.use("/dashboard", dashboardRoutes);
-app.use(authRoutes);
+// app.use("/products", productRoutes);
+// app.use("/upload", uploadRoutes);
+// app.use("/users", userRoutes);
+// app.use("/dashboard", dashboardRoutes);
+app.use("/auth",authRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
