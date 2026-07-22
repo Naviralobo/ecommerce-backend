@@ -14,17 +14,21 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
       id: user._id,
       name: user.name,
       email: user.email,
-    })
+    }),
   );
 });
 
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const { accessToken, user } = await loginUser(
-    email,
-    password
-  );
+  const { accessToken, refreshToken, user } = await loginUser(email, password);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
 
   res.json(
     new ApiResponse(true, "Login successful", {
@@ -35,6 +39,6 @@ export const login = asyncHandler(async (req, res) => {
         email: user.email,
         role: user.role,
       },
-    })
+    }),
   );
 });
