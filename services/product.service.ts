@@ -8,6 +8,7 @@ import {
   deleteProduct,
 } from "../repositories/product.repository";
 import { AppError } from "../utils/AppError";
+import { ROLES } from "../constants/roles";
 
 interface ProductQuery {
   search?: string;
@@ -92,7 +93,19 @@ export const getProductByIdService = async (
 export const updateProductService = async (
   productId: string,
   productData: IProduct,
+  userId: string,
+  role: string,
 ): Promise<IProduct | null> => {
+  const existingProduct = await getProductById(productId);
+
+  if (!existingProduct) {
+    throw new AppError("Product not found", 404);
+  }
+
+  if (role !== ROLES.ADMIN && existingProduct.seller.toString() !== userId) {
+    throw new AppError("You are not authorized to update this product", 403);
+  }
+
   const product = await updateProduct(productId, productData);
   if (!product) {
     throw new AppError("Product not found", 404);
@@ -102,7 +115,18 @@ export const updateProductService = async (
 
 export const deleteProductService = async (
   productId: string,
+  userId: string,
+  role: string,
 ): Promise<void> => {
+  const existingProduct = await getProductById(productId);
+
+  if (!existingProduct) {
+    throw new AppError("Product not found", 404);
+  }
+
+  if (role !== ROLES.ADMIN && existingProduct.seller.toString() !== userId) {
+    throw new AppError("You are not authorized to delete this product", 403);
+  }
   const product = await deleteProduct(productId);
 
   if (!product) {

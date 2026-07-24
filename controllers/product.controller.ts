@@ -12,7 +12,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 
 export const createProduct = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const product = await createProductService(req.body,req.user!.id);
+    const product = await createProductService(req.body, req.user!.id);
 
     res
       .status(201)
@@ -48,10 +48,12 @@ export const getProductById = asyncHandler(
 );
 
 export const updateProduct = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (req: AuthRequest, res: Response) => {
     const product = await updateProductService(
       req.params.id as string,
       req.body,
+      req.user!.id,
+      req.user!.role,
     );
     res
       .status(200)
@@ -60,8 +62,12 @@ export const updateProduct = asyncHandler(
 );
 
 export const deleteProduct = asyncHandler(
-  async (req: Request, res: Response) => {
-    await deleteProductService(req.params.id as string);
+  async (req: AuthRequest, res: Response) => {
+    await deleteProductService(
+      req.params.id as string,
+      req.user!.id,
+      req.user!.role,
+    );
 
     res
       .status(200)
