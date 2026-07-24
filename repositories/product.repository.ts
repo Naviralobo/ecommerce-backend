@@ -10,3 +10,7 @@ export const createProduct = async (
 export const getAllProducts = async (): Promise<IProduct[]> => {
   return Product.find();
 };
+
+export const getProductById = async(productId:string):Promise<IProduct|null> =>{
+    return Product.findById(productId);
+}

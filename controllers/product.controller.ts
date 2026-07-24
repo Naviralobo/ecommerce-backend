@@ -3,6 +3,7 @@ import { asyncHandler } from "../middleware/asyncHandler";
 import {
   createProductService,
   getAllProductsService,
+  getProductByIdService,
 } from "../services/product.service";
 import { ApiResponse } from "../utils/ApiResponse";
 
@@ -22,5 +23,15 @@ export const getAllProducts = asyncHandler(
     res
       .status(200)
       .json(new ApiResponse(true, "Products fetched successfully", products));
+  },
+);
+
+export const getProductById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const product = await getProductByIdService(req.params.id as string);
+
+    res
+      .status(200)
+      .json(new ApiResponse(true, "Product fetched successfully", product));
   },
 );
