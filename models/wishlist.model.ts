@@ -1,0 +1,24 @@
+import { model, Schema } from "mongoose";
+import { IWishlist } from "../interfaces/wishlist.interface";
+
+const wishlistSchema = new Schema<IWishlist>(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
+    products: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Products",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
+
+export default model<IWishlist>("Wishlist", wishlistSchema);

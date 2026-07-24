@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
 import categoryRoutes from "./routes/category.routes";
+import wishlistRoutes from "./routes/wishlist.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -31,6 +32,7 @@ app.get("/admin", (_, res) => {
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
+app.use("/wishlist", wishlistRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
