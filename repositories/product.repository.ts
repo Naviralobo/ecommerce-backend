@@ -7,9 +7,18 @@ export const createProduct = async (
   return Product.create(productData);
 };
 
-export const getAllProducts = async (): Promise<IProduct[]> => {
-  return Product.find();
+export const getAllProducts = async (
+  filter: Record<string,any>,
+  sort: Record<string, 1 | -1>,
+  page: number,
+  limit: number
+): Promise<IProduct[]> => {
+  return Product.find(filter)
+    .sort(sort)
+    .skip((page - 1) * limit)
+    .limit(limit);
 };
+
 
 export const getProductById = async (
   productId: string,
