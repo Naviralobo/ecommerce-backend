@@ -1,17 +1,22 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 import { env } from "../config/env";
 import { AppError } from "../utils/AppError";
 
-interface AuthRequest extends Request {
-  user?: JwtPayload;
+interface AuthUser {
+  id: string;
+  role: string;
+}
+
+export interface AuthRequest extends Request {
+  user?: AuthUser;
 }
 
 export const protect = (
   req: AuthRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   const authHeader = req.headers.authorization;
 
@@ -22,9 +27,16 @@ export const protect = (
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET) as JwtPayload;
+    const decoded = jwt.verify(token, env.JWT_SECRET);
 
-    req.user = decoded;
+    if (typeof decoded === "string") {
+      throw new AppError("Invalid token", 401);
+    }
+
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+    };
 
     next();
   } catch {

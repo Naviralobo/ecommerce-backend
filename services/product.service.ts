@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IProduct } from "../interfaces/product.interface";
 import {
   createProduct,
@@ -20,7 +21,9 @@ interface ProductQuery {
 
 export const createProductService = (
   productData: Partial<IProduct>,
+  sellerId: string,
 ): Promise<IProduct> => {
+  productData.seller = new Types.ObjectId(sellerId);
   return createProduct(productData);
 };
 

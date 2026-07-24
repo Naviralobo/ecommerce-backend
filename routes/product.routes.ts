@@ -6,10 +6,17 @@ import {
   updateProduct,
   deleteProduct,
 } from "../controllers/product.controller";
+import { authorize, protect } from "../middleware/auth.middleware";
+import { ROLES } from "../constants/roles";
 
 const router = Router();
 
-router.post("/", createProduct);
+router.post(
+  "/",
+  protect,
+  authorize(ROLES.SELLER, ROLES.ADMIN),
+  createProduct
+);
 
 router.get("/", getAllProducts);
 

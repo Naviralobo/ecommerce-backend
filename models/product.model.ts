@@ -40,6 +40,12 @@ const productSchema = new Schema<IProduct>(
       default: [],
     },
 
+    seller: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     status: {
       type: String,
       enum: Object.values(PRODUCT_STATUS),
@@ -48,7 +54,7 @@ const productSchema = new Schema<IProduct>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Product = model<IProduct>("Product", productSchema);

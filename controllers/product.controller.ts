@@ -7,11 +7,12 @@ import {
   updateProductService,
   deleteProductService,
 } from "../services/product.service";
+import { AuthRequest } from "../middleware/auth.middleware";
 import { ApiResponse } from "../utils/ApiResponse";
 
 export const createProduct = asyncHandler(
-  async (req: Request, res: Response) => {
-    const product = await createProductService(req.body);
+  async (req: AuthRequest, res: Response) => {
+    const product = await createProductService(req.body,req.user!.id);
 
     res
       .status(201)

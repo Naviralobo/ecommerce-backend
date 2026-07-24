@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Document, Types } from "mongoose";
 import { ProductStatus } from "../constants/product";
 
 export interface IProduct extends Document {
@@ -11,4 +11,5 @@ export interface IProduct extends Document {
   status: ProductStatus;
   createdAt: Date;
   updatedAt: Date;
+  seller: Types.ObjectId;
 }
