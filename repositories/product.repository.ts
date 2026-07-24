@@ -11,13 +11,24 @@ export const getAllProducts = async (): Promise<IProduct[]> => {
   return Product.find();
 };
 
-export const getProductById = async(productId:string):Promise<IProduct|null> =>{
-    return Product.findById(productId);
-}
+export const getProductById = async (
+  productId: string,
+): Promise<IProduct | null> => {
+  return Product.findById(productId);
+};
 
-export const updateProduct = async(productId:string, productData:IProduct) : Promise<IProduct|null>=>{
-    return Product.findByIdAndUpdate(productId,productData,{
-        new:true,
-        runValidators:true
-    })
-}
+export const updateProduct = async (
+  productId: string,
+  productData: IProduct,
+): Promise<IProduct | null> => {
+  return Product.findByIdAndUpdate(productId, productData, {
+    new: true,
+    runValidators: true,
+  });
+};
+
+export const deleteProduct = async (
+  productId: string,
+): Promise<IProduct | null> => {
+  return Product.findByIdAndDelete(productId);
+};

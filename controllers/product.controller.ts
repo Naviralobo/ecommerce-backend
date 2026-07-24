@@ -4,7 +4,8 @@ import {
   createProductService,
   getAllProductsService,
   getProductByIdService,
-  updateProductService
+  updateProductService,
+  deleteProductService
 } from "../services/product.service";
 import { ApiResponse } from "../utils/ApiResponse";
 
@@ -42,3 +43,13 @@ export const updateProduct = asyncHandler(
         res.status(200).json(new ApiResponse(true,"Product updated successfully",product))
     }
 )
+
+export const deleteProduct = asyncHandler(
+  async (req: Request, res: Response) => {
+    await deleteProductService(req.params.id as string);
+
+    res.status(200).json(
+      new ApiResponse(true, "Product deleted successfully", null)
+    );
+  }
+);

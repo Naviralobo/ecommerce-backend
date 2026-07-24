@@ -3,7 +3,8 @@ import {
   createProduct,
   getAllProducts,
   getProductById,
-  updateProduct
+  updateProduct,
+  deleteProduct
 } from "../repositories/product.repository";
 import { AppError } from "../utils/AppError";
 
@@ -36,4 +37,14 @@ export const updateProductService = async(
     throw new AppError("Product not found",404)
   }
   return product
+};
+
+export const deleteProductService = async (
+  productId: string
+): Promise<void> => {
+  const product = await deleteProduct(productId);
+
+  if (!product) {
+    throw new AppError("Product not found", 404);
+  }
 };

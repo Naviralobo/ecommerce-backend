@@ -17,7 +17,6 @@ app.use(cookieParser());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(errorHandler);
 
 app.get("/admin", (_, res) => {
   res.json({
@@ -37,5 +36,7 @@ app.use((_, res) => {
     message: "Route not found",
   });
 });
+app.use(errorHandler);
+
 
 export default app;
