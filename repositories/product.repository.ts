@@ -7,3 +7,6 @@ export const createProduct = async (
   return Product.create(productData);
 };
 
+export const getAllProducts = async (): Promise<IProduct[]> => {
+  return Product.find();
+};
