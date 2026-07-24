@@ -1,11 +1,12 @@
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
-import productRoutes from "./routes/product.routes";
 // import uploadRoutes from "./routes/upload";
 // import userRoutes from "./routes/user";
 // import dashboardRoutes from "./routes/dashboard";
 import authRoutes from "./routes/auth.routes";
+import productRoutes from "./routes/product.routes";
+import categoryRoutes from "./routes/category.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -29,6 +30,7 @@ app.get("/admin", (_, res) => {
 // app.use("/dashboard", dashboardRoutes);
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
+app.use("/categories", categoryRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
@@ -37,6 +39,5 @@ app.use((_, res) => {
   });
 });
 app.use(errorHandler);
-
 
 export default app;
