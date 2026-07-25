@@ -10,6 +10,7 @@ import categoryRoutes from "./routes/category.routes";
 import wishlistRoutes from "./routes/wishlist.routes";
 import cartRoutes from "./routes/cart.routes";
 import addressRoutes from "./routes/address.routes";
+import orderRoutes from "./routes/order.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -37,6 +38,7 @@ app.use("/categories", categoryRoutes);
 app.use("/wishlist", wishlistRoutes);
 app.use("/cart", cartRoutes);
 app.use("/address", addressRoutes);
+app.use("/order", orderRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
