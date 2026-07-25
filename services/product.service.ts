@@ -6,6 +6,7 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
+  saveProduct,
 } from "../repositories/product.repository";
 import { AppError } from "../utils/AppError";
 import { ROLES } from "../constants/roles";
@@ -132,4 +133,23 @@ export const deleteProductService = async (
   if (!product) {
     throw new AppError("Product not found", 404);
   }
+};
+
+export const decreaseProductStockService = async (
+  productId: string,
+  quantity: number
+): Promise<void> => {
+  const product = await getProductById(productId);
+
+  if (!product) {
+    throw new AppError("Product not found", 404);
+  }
+
+  if (product.stock < quantity) {
+    throw new AppError("Insufficient stock", 400);
+  }
+
+  product.stock -= quantity;
+
+  await saveProduct(product);
 };

@@ -11,10 +11,11 @@ import { getCartService } from "./cart.service";
 import { clearCart } from "../repositories/cart.repository";
 import { getAddressById } from "../repositories/address.repository";
 import { ROLES } from "../constants/roles";
+import { decreaseProductStockService } from "./product.service";
 
 export const createOrderService = async (
   userId: string,
-  addressId: string
+  addressId: string,
 ): Promise<IOrder> => {
   const cart = await getCartService(userId);
 
@@ -41,7 +42,9 @@ export const createOrderService = async (
       price,
     };
   });
-
+  for (const item of items) {
+    await decreaseProductStockService(item.product.toString(), item.quantity);
+  }
   const order = await createOrder({
     user: new Types.ObjectId(userId),
     address: new Types.ObjectId(addressId),
@@ -54,16 +57,14 @@ export const createOrderService = async (
   return order;
 };
 
-export const getMyOrdersService = async (
-  userId: string
-): Promise<IOrder[]> => {
+export const getMyOrdersService = async (userId: string): Promise<IOrder[]> => {
   return getOrdersByUser(userId);
 };
 
 export const getOrderByIdService = async (
   orderId: string,
   userId: string,
-  role: string
+  role: string,
 ): Promise<IOrder> => {
   const order = await getOrderById(orderId);
 
@@ -71,10 +72,7 @@ export const getOrderByIdService = async (
     throw new AppError("Order not found", 404);
   }
 
-  if (
-    role !== ROLES.ADMIN &&
-    order.user.toString() !== userId
-  ) {
+  if (role !== ROLES.ADMIN && order.user.toString() !== userId) {
     throw new AppError("Unauthorized", 403);
   }
 
@@ -83,7 +81,7 @@ export const getOrderByIdService = async (
 
 export const updateOrderStatusService = async (
   orderId: string,
-  status: string
+  status: string,
 ): Promise<IOrder> => {
   const order = await updateOrderStatus(orderId, status);
 

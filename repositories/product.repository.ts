@@ -8,17 +8,16 @@ export const createProduct = async (
 };
 
 export const getAllProducts = async (
-  filter: Record<string,any>,
+  filter: Record<string, any>,
   sort: Record<string, 1 | -1>,
   page: number,
-  limit: number
+  limit: number,
 ): Promise<IProduct[]> => {
   return Product.find(filter)
     .sort(sort)
     .skip((page - 1) * limit)
     .limit(limit);
 };
-
 
 export const getProductById = async (
   productId: string,
@@ -40,4 +39,8 @@ export const deleteProduct = async (
   productId: string,
 ): Promise<IProduct | null> => {
   return Product.findByIdAndDelete(productId);
+};
+
+export const saveProduct = async (product: IProduct): Promise<IProduct> => {
+  return product.save();
 };
