@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
 import categoryRoutes from "./routes/category.routes";
 import wishlistRoutes from "./routes/wishlist.routes";
+import cartRoutes from "./routes/cart.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -33,6 +34,7 @@ app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/wishlist", wishlistRoutes);
+app.use("/cart", cartRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
