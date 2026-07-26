@@ -7,10 +7,15 @@ import {
 } from "../controllers/order.controller";
 import { protect, authorize } from "../middleware/auth.middleware";
 import { ROLES } from "../constants/roles";
+import { validate } from "../middleware/validate.middleware";
+import {
+  createOrderSchema,
+  updateOrderSchema,
+} from "../validations/order.validation";
 
 const router = Router();
 
-router.post("/", protect, createOrder);
+router.post("/", protect, validate(createOrderSchema), createOrder);
 
 router.get("/", protect, getMyOrders);
 
@@ -20,7 +25,8 @@ router.put(
   "/:id/status",
   protect,
   authorize(ROLES.ADMIN),
-  updateOrderStatus
+  validate(updateOrderSchema),
+  updateOrderStatus,
 );
 
 export default router;
