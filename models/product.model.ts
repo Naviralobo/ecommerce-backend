@@ -35,10 +35,11 @@ const productSchema = new Schema<IProduct>(
       min: 0,
     },
 
-    images: {
-      type: [String],
-      default: [],
-    },
+    images: [
+      {
+        type: String,
+      },
+    ],
 
     seller: {
       type: Schema.Types.ObjectId,

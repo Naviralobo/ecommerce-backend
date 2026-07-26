@@ -10,6 +10,7 @@ import {
 } from "../repositories/product.repository";
 import { AppError } from "../utils/AppError";
 import { ROLES } from "../constants/roles";
+import { getSignedFileUrlService } from "./upload.service";
 
 interface ProductQuery {
   search?: string;
@@ -78,7 +79,16 @@ export const getAllProductsService = async (
   const page = query.page ?? 1;
   const limit = query.limit ?? 10;
 
-  return getAllProducts(filter, sort, page, limit);
+  const products = await getAllProducts(filter, sort, page, limit);
+
+  const productsWithImages = await Promise.all(
+    products.map(async (product: IProduct) => ({
+      ...product.toObject(),
+      images: await getSignedImageUrls(product.images),
+    })),
+  );
+
+  return productsWithImages;
 };
 
 export const getProductByIdService = async (
@@ -88,7 +98,12 @@ export const getProductByIdService = async (
   if (!product) {
     throw new AppError("Product not found", 404);
   }
-  return product;
+
+  const productWithImages = {
+    ...product.toObject(),
+    images: await getSignedImageUrls(product.images),
+  };
+  return productWithImages;
 };
 
 export const updateProductService = async (
@@ -137,7 +152,7 @@ export const deleteProductService = async (
 
 export const decreaseProductStockService = async (
   productId: string,
-  quantity: number
+  quantity: number,
 ): Promise<void> => {
   const product = await getProductById(productId);
 
@@ -152,4 +167,10 @@ export const decreaseProductStockService = async (
   product.stock -= quantity;
 
   await saveProduct(product);
+};
+
+export const getSignedImageUrls = async (keys: string[]): Promise<string[]> => {
+  return Promise.all(keys.map(getSignedFileUrlService));
+  //The above file is equivalent to keys.map(key=>getSignedFileUrlService(key))
+  //The above method works as map passes each key as the first argument.
 };
