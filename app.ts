@@ -1,9 +1,7 @@
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
-// import uploadRoutes from "./routes/upload";
-// import userRoutes from "./routes/user";
-// import dashboardRoutes from "./routes/dashboard";
+
 import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
 import categoryRoutes from "./routes/category.routes";
@@ -30,9 +28,6 @@ app.get("/admin", (_, res) => {
   });
 });
 
-// app.use("/upload", uploadRoutes);
-// app.use("/users", userRoutes);
-// app.use("/dashboard", dashboardRoutes);
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
