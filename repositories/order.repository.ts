@@ -2,30 +2,24 @@ import Order from "../models/order.model";
 import { IOrder } from "../interfaces/order.interface";
 
 export const createOrder = async (
-  orderData: Partial<IOrder>
+  orderData: Partial<IOrder>,
 ): Promise<IOrder> => {
   return Order.create(orderData);
 };
 
-export const getOrdersByUser = async (
-  userId: string
-): Promise<IOrder[]> => {
+export const getOrdersByUser = async (userId: string): Promise<IOrder[]> => {
   return Order.find({ user: userId })
     .populate("address")
     .populate("items.product");
 };
 
-export const getOrderById = async (
-  orderId: string
-): Promise<IOrder | null> => {
-  return Order.findById(orderId)
-    .populate("address")
-    .populate("items.product");
+export const getOrderById = async (orderId: string): Promise<IOrder | null> => {
+  return Order.findById(orderId).populate("address").populate("items.product");
 };
 
 export const updateOrderStatus = async (
   orderId: string,
-  status: string
+  status: string,
 ): Promise<IOrder | null> => {
   return Order.findByIdAndUpdate(
     orderId,
@@ -33,6 +27,19 @@ export const updateOrderStatus = async (
     {
       new: true,
       runValidators: true,
-    }
+    },
   );
+};
+
+export const hasPurchasedProduct = async (
+  userId: string,
+  productId: string,
+): Promise<boolean> => {
+  const order = await Order.findOne({
+    user: userId,
+    status: "delivered",
+    "items.product": productId,
+  });
+
+  return !!order;
 };

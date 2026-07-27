@@ -52,6 +52,16 @@ const productSchema = new Schema<IProduct>(
       enum: Object.values(PRODUCT_STATUS),
       default: PRODUCT_STATUS.ACTIVE,
     },
+
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+
+    numReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

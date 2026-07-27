@@ -44,3 +44,14 @@ export const deleteProduct = async (
 export const saveProduct = async (product: IProduct): Promise<IProduct> => {
   return product.save();
 };
+
+export const updateProductRating = async (
+  productId: string,
+  averageRating: number,
+  numReviews: number,
+): Promise<void> => {
+  await Product.findByIdAndUpdate(productId, {
+    averageRating,
+    numReviews,
+  });
+};

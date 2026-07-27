@@ -12,4 +12,6 @@ export interface IProduct extends Document {
   createdAt: Date;
   updatedAt: Date;
   seller: Types.ObjectId;
+  averageRating: number;
+  numReviews: number;
 }
