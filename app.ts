@@ -1,6 +1,7 @@
 import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 
 import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
@@ -13,6 +14,7 @@ import uploadRoutes from "./routes/order.routes";
 import reviewRoutes from "./routes/review.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
+import logger from "./config/logger";
 
 const app = express();
 
@@ -22,6 +24,14 @@ app.use(cookieParser());
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(
+  morgan("combined", {//out of multiple formats , we choose this to get more info
+    stream: {
+      write: (message) => logger.info(message.trim()), //this tells morgan to write info into logger and not console
+    },
+  }),
+);
 
 app.get("/admin", (_, res) => {
   res.json({

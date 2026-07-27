@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../utils/AppError";
+import logger from "../config/logger";
 
 export const errorHandler = (
   err: Error,
@@ -7,6 +8,16 @@ export const errorHandler = (
   res: Response,
   next: NextFunction,
 ): void => {
+  const statusCode = err instanceof AppError ? err.statusCode : 500;
+
+  logger.error({
+    message: err.message,
+    stack: err.stack,
+    statusCode,
+    method: req.method,
+    url: req.originalUrl,
+  });
+
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
       success: false,
@@ -15,8 +26,6 @@ export const errorHandler = (
 
     return;
   }
-
-  console.error(err);
 
   res.status(500).json({
     success: false,
