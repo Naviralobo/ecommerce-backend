@@ -1,6 +1,6 @@
-import { createUser, findUserByEmail } from "../repositories/user.repository";
+import { createUser, findUserByEmail, getUserById } from "../repositories/user.repository";
 import { IUser } from "../interfaces/user.interface";
-import { generateAccessToken, generateRefreshToken } from "../utils/jwt";
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt";
 import { AppError } from "../utils/AppError";
 
 export const registerUser = async (
@@ -44,3 +44,22 @@ export const loginUser = async (email: string, password: string) => {
     user,
   };
 };
+
+export const refreshAccessToken = async (
+  refreshToken: string
+): Promise<string> => {
+  const payload = verifyRefreshToken(refreshToken);
+
+  const user = await getUserById(payload.id);
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  return generateAccessToken(
+    user._id.toString(),
+    user.role
+  );
+};
+
+

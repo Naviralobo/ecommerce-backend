@@ -12,3 +12,9 @@ export const createUser = async (
 ): Promise<IUser> => {
   return User.create(data);
 };
+
+export const getUserById = async (
+  id: string
+): Promise<IUser | null> => {
+  return User.findById(id);
+};

@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import type { StringValue } from "ms";
 
 dotenv.config();
 
@@ -17,7 +18,8 @@ export const env = {
   AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY as string,
   AWS_BUCKET_URL: process.env.AWS_BUCKET_URL as string,
 
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN as string,
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN as StringValue,
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as StringValue,
 
   PORT: Number(process.env.PORT) || 3000,
   NODE_ENV: process.env.NODE_ENV || "development",

@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { registerUser } from "../services/auth.service";
+import { refreshAccessToken, registerUser } from "../services/auth.service";
 import { loginUser } from "../services/auth.service";
 import { ApiResponse } from "../utils/ApiResponse";
+import { AppError } from "../utils/AppError";
 
 export const register = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
@@ -40,5 +41,33 @@ export const login = asyncHandler(async (req, res) => {
         role: user.role,
       },
     }),
+  );
+});
+
+export const refreshToken = asyncHandler(async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    throw new AppError("Refresh token missing", 401);
+  }
+
+  const accessToken = await refreshAccessToken(token);
+
+  res.status(200).json(
+    new ApiResponse(true, "Access token refreshed", {
+      accessToken,
+    }),
+  );
+});
+
+export const logout = asyncHandler(async (_req, res) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+  });
+
+  res.status(200).json(
+    new ApiResponse(true, "Logged out successfully", null),
   );
 });
