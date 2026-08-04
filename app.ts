@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
+import cors from "cors";
 
 import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
@@ -10,7 +11,7 @@ import wishlistRoutes from "./routes/wishlist.routes";
 import cartRoutes from "./routes/cart.routes";
 import addressRoutes from "./routes/address.routes";
 import orderRoutes from "./routes/order.routes";
-import uploadRoutes from "./routes/order.routes";
+import uploadRoutes from "./routes/upload.routes";
 import reviewRoutes from "./routes/review.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
@@ -20,6 +21,14 @@ const app = express();
 
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
+
 app.use(cookieParser());
 
 app.use(express.urlencoded({ extended: true }));
