@@ -13,6 +13,7 @@ import addressRoutes from "./routes/address.routes";
 import orderRoutes from "./routes/order.routes";
 import uploadRoutes from "./routes/upload.routes";
 import reviewRoutes from "./routes/review.routes";
+import adminRoutes from "./routes/admin.routes";
 
 import { errorHandler } from "./middleware/errorHandler";
 import logger from "./config/logger";
@@ -42,12 +43,6 @@ app.use(
   }),
 );
 
-app.get("/admin", (_, res) => {
-  res.json({
-    message: "Welcome to the admin page!",
-  });
-});
-
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/categories", categoryRoutes);
@@ -57,6 +52,7 @@ app.use("/address", addressRoutes);
 app.use("/order", orderRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/reviews", reviewRoutes);
+app.use("/admin", adminRoutes);
 
 app.use((_, res) => {
   res.status(404).json({
