@@ -1,6 +1,14 @@
-import { createUser, findUserByEmail, getUserById } from "../repositories/user.repository";
+import {
+  createUser,
+  findUserByEmail,
+  getUserById,
+} from "../repositories/user.repository";
 import { IUser } from "../interfaces/user.interface";
-import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../utils/jwt";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt";
 import { AppError } from "../utils/AppError";
 
 export const registerUser = async (
@@ -35,7 +43,6 @@ export const loginUser = async (email: string, password: string) => {
   }
 
   const accessToken = generateAccessToken(user._id.toString(), user.role);
-
   const refreshToken = generateRefreshToken(user._id.toString(), user.role);
 
   return {
@@ -46,8 +53,8 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 export const refreshAccessToken = async (
-  refreshToken: string
-): Promise<string> => {
+  refreshToken: string,
+): Promise<{ accessToken: string; refreshToken: string }> => {
   const payload = verifyRefreshToken(refreshToken);
 
   const user = await getUserById(payload.id);
@@ -56,10 +63,11 @@ export const refreshAccessToken = async (
     throw new AppError("User not found", 404);
   }
 
-  return generateAccessToken(
-    user._id.toString(),
-    user.role
-  );
+  const accessToken = generateAccessToken(user._id.toString(), user.role);
+  const newRefreshToken = generateRefreshToken(user._id.toString(), user.role);
+
+  return {
+    accessToken,
+    refreshToken: newRefreshToken,
+  };
 };
-
-
