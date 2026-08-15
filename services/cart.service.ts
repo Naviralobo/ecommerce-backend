@@ -3,23 +3,24 @@ import {
   clearCart,
   createCart,
   getCartByUser,
+  getCartWithProducts,
   saveCart,
 } from "../repositories/cart.repository";
 
 const removeItemFromCart = (cart: ICart, productId: string) => {
   cart.items = cart.items.filter(
-    (item) => item.product.toString() !== productId,
+    (item: any) => (item.product._id ?? item.product).toString() !== productId,
   );
 };
 
-export const getCartService = async (userId: string): Promise<ICart> => {
+export const getCartService = async (userId: string) => {
   let cart = await getCartByUser(userId);
 
   if (!cart) {
     cart = await createCart(userId);
   }
 
-  return cart;
+  return getCartWithProducts(userId);
 };
 
 export const addToCartService = async (
@@ -27,37 +28,47 @@ export const addToCartService = async (
   productId: string,
   quantity: number,
 ): Promise<ICart> => {
-  const cart = await getCartService(userId);
+  const cart = await getCartByUser(userId);
 
-  const existingItem = cart?.items.find(
-    (item: any) => item.product.toString() === productId.toString(),
+  const actualCart = cart ?? (await createCart(userId));
+
+  const existingItem = actualCart.items.find(
+    (item) => item.product.toString() === productId,
   );
 
   if (existingItem) {
     if (quantity <= 0) {
-      removeItemFromCart(cart, productId);
+      removeItemFromCart(actualCart, productId);
     } else {
       existingItem.quantity = quantity;
     }
-  } else {
-    cart?.items.push({
+  } else if (quantity > 0) {
+    actualCart.items.push({
       product: productId as any,
       quantity,
     });
   }
 
-  return saveCart(cart);
+  await saveCart(actualCart);
+
+  return (await getCartWithProducts(userId))!;
 };
 
 export const removeFromCartService = async (
   userId: string,
   productId: string,
 ) => {
-  const cart = await getCartService(userId);
+  const cart = await getCartByUser(userId);
+
+  if (!cart) {
+    return null;
+  }
 
   removeItemFromCart(cart, productId);
 
-  return saveCart(cart);
+  await saveCart(cart);
+
+  return getCartWithProducts(userId);
 };
 
 export const clearCartService = async (userId: string) => {

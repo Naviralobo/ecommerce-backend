@@ -2,6 +2,12 @@ import { ICart } from "../interfaces/cart.interface";
 import Cart from "../models/cart.model";
 
 export const getCartByUser = async (userId: string): Promise<ICart | null> => {
+  return Cart.findOne({ user: userId });
+};
+
+export const getCartWithProducts = async (
+  userId: string,
+): Promise<ICart | null> => {
   return Cart.findOne({ user: userId }).populate("items.product");
 };
 
