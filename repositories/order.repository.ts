@@ -7,9 +7,7 @@ export const createOrder = async (
   return Order.create(orderData);
 };
 
-export const getOrdersByUser = async (
-  userId: string,
-): Promise<IOrder[]> => {
+export const getOrdersByUser = async (userId: string): Promise<IOrder[]> => {
   return Order.find({
     user: userId,
   })
@@ -17,9 +15,7 @@ export const getOrdersByUser = async (
     .sort({ createdAt: -1 });
 };
 
-export const getOrderById = async (
-  orderId: string,
-): Promise<IOrder | null> => {
+export const getOrderById = async (orderId: string): Promise<IOrder | null> => {
   return Order.findById(orderId).populate("items.product");
 };
 
@@ -38,6 +34,21 @@ export const getAllOrders = async (): Promise<IOrder[]> => {
     .populate("user", "name email")
     .populate("items.product")
     .sort({ createdAt: -1 });
+};
+
+export const hasPurchasedProduct = async (
+  userId: string,
+  productId: string,
+): Promise<boolean> => {
+  const order = await Order.findOne({
+    user: userId,
+    "items.product": productId,
+    status: {
+      $in: [OrderStatus.CONFIRMED, OrderStatus.SHIPPED, OrderStatus.DELIVERED],
+    },
+  }).lean();
+
+  return !!order;
 };
 
 export const updateOrderStatus = async (
