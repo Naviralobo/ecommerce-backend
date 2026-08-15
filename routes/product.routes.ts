@@ -28,7 +28,13 @@ router.get("/", getAllProducts);
 
 router.get("/:id", getProductById);
 
-router.put("/:id", validate(updateProductSchema), updateProduct);
+router.put(
+  "/:id",
+  protect,
+  authorize(ROLES.SELLER, ROLES.ADMIN),
+  validate(updateProductSchema),
+  updateProduct,
+);
 
 router.delete("/:id", deleteProduct);
 
