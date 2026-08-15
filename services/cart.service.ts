@@ -6,6 +6,41 @@ import {
   getCartWithProducts,
   saveCart,
 } from "../repositories/cart.repository";
+import { getPublicFileUrlService } from "./upload.service";
+
+const toPlainObject = <T>(value: T): T => {
+  if (value && typeof value === "object" && "toObject" in value) {
+    return (value as any).toObject();
+  }
+
+  return value;
+};
+
+const normalizeProductImages = (product: any) => {
+  if (!product) return product;
+
+  const plainProduct = toPlainObject(product);
+
+  return {
+    ...plainProduct,
+    images: Array.isArray(plainProduct.images)
+      ? plainProduct.images.map((image: string) =>
+          typeof image === "string" ? getPublicFileUrlService(image) : image,
+        )
+      : plainProduct.images,
+  };
+};
+
+const normalizeCartItem = (item: any) => {
+  if (!item) return item;
+
+  const plainItem = toPlainObject(item);
+
+  return {
+    ...plainItem,
+    product: normalizeProductImages(plainItem.product),
+  };
+};
 
 const removeItemFromCart = (cart: ICart, productId: string) => {
   cart.items = cart.items.filter(
@@ -20,7 +55,18 @@ export const getCartService = async (userId: string): Promise<ICart> => {
     cart = await createCart(userId);
   }
 
-  return (await getCartWithProducts(userId))!;
+  const populatedCart = (await getCartWithProducts(userId))!;
+
+  if (!populatedCart) {
+    return cart;
+  }
+
+  const plainCart = toPlainObject(populatedCart);
+
+  return {
+    ...plainCart,
+    items: plainCart.items.map(normalizeCartItem),
+  } as ICart;
 };
 
 export const addToCartService = async (
@@ -43,7 +89,14 @@ export const addToCartService = async (
 
     await saveCart(newCart);
 
-    return (await getCartWithProducts(userId))!;
+    const populatedCart = (await getCartWithProducts(userId))!;
+
+    const plainCart = toPlainObject(populatedCart);
+
+    return {
+      ...plainCart,
+      items: plainCart.items.map(normalizeCartItem),
+    } as ICart;
   }
 
   const existingItem = cart.items.find(
@@ -61,7 +114,13 @@ export const addToCartService = async (
 
   await saveCart(cart);
 
-  return (await getCartWithProducts(userId))!;
+  const populatedCart = (await getCartWithProducts(userId))!;
+  const plainCart = toPlainObject(populatedCart);
+
+  return {
+    ...plainCart,
+    items: plainCart.items.map(normalizeCartItem),
+  } as ICart;
 };
 
 export const removeFromCartService = async (
@@ -78,9 +137,31 @@ export const removeFromCartService = async (
 
   await saveCart(cart);
 
-  return getCartWithProducts(userId);
+  const populatedCart = await getCartWithProducts(userId);
+
+  if (!populatedCart) {
+    return null;
+  }
+
+  const plainCart = toPlainObject(populatedCart);
+
+  return {
+    ...plainCart,
+    items: plainCart.items.map(normalizeCartItem),
+  } as ICart;
 };
 
 export const clearCartService = async (userId: string) => {
-  return clearCart(userId);
+  const cart = await clearCart(userId);
+
+  if (!cart) {
+    return cart;
+  }
+
+  const plainCart = toPlainObject(cart);
+
+  return {
+    ...plainCart,
+    items: plainCart.items.map(normalizeCartItem),
+  } as ICart;
 };

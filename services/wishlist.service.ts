@@ -5,6 +5,29 @@ import {
   saveWishlist,
 } from "../repositories/wishlist.repository";
 import { AppError } from "../utils/AppError";
+import { getPublicFileUrlService } from "./upload.service";
+
+const toPlainObject = <T>(value: T): T => {
+  if (value && typeof value === "object" && "toObject" in value) {
+    return (value as any).toObject();
+  }
+
+  return value;
+};
+
+const normalizeWishlistProducts = (products: any[]) =>
+  products.map((product) => {
+    const plainProduct = toPlainObject(product);
+
+    return {
+      ...plainProduct,
+      images: Array.isArray(plainProduct.images)
+        ? plainProduct.images.map((image: string) =>
+            typeof image === "string" ? getPublicFileUrlService(image) : image,
+          )
+        : plainProduct.images,
+    };
+  });
 
 export const getWishlistService = async (
   userId: string,
@@ -15,7 +38,12 @@ export const getWishlistService = async (
     wishlist = await createWishlist(userId);
   }
 
-  return wishlist;
+  const plainWishlist = toPlainObject(wishlist);
+
+  return {
+    ...plainWishlist,
+    products: normalizeWishlistProducts(plainWishlist.products),
+  } as IWishlist;
 };
 
 export const addProductToWishlistService = async (
@@ -29,7 +57,13 @@ export const addProductToWishlistService = async (
   }
   wishlist.products.push(productId as any);
 
-  return saveWishlist(wishlist);
+  const savedWishlist = await saveWishlist(wishlist as any);
+  const plainWishlist = toPlainObject(savedWishlist);
+
+  return {
+    ...plainWishlist,
+    products: normalizeWishlistProducts(plainWishlist.products),
+  } as IWishlist;
 };
 
 export const removeProductFromWishlistService = async (
@@ -38,9 +72,15 @@ export const removeProductFromWishlistService = async (
 ) => {
   const wishlist = await getWishlistService(userId);
 
-   wishlist.products = wishlist.products.filter(
+  wishlist.products = wishlist.products.filter(
     (product: any) => product._id.toString() !== productId,
   );
 
-  return saveWishlist(wishlist);
+  const savedWishlist = await saveWishlist(wishlist as any);
+  const plainWishlist = toPlainObject(savedWishlist);
+
+  return {
+    ...plainWishlist,
+    products: normalizeWishlistProducts(plainWishlist.products),
+  } as IWishlist;
 };
