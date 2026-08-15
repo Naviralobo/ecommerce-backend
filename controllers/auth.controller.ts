@@ -1,17 +1,17 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../middleware/asyncHandler";
-import { refreshAccessToken, registerUser } from "../services/auth.service";
-import { loginUser } from "../services/auth.service";
-import { env } from "../config/env";
+import {
+  refreshAccessToken,
+  registerUser,
+  loginUser,
+} from "../services/auth.service";
 import { ApiResponse } from "../utils/ApiResponse";
 import { AppError } from "../utils/AppError";
 
-const isProduction = env.NODE_ENV === "production";
-
 const refreshCookieOptions = {
   httpOnly: true,
-  secure: isProduction,
-  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  secure: true,
+  sameSite: "none" as const,
   maxAge: 7 * 24 * 60 * 60 * 1000,
   path: "/",
 };
@@ -70,12 +70,10 @@ export const refreshToken = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (_req, res) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-    path: "/",
-  });
+  res.clearCookie("refreshToken", refreshCookieOptions);
 
-  res.status(200).json(new ApiResponse(true, "Logged out successfully", null));
+  res.status(200).json(
+    new ApiResponse(true, "Logged out successfully", null),
+  );
 });
+
