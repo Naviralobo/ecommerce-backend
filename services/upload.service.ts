@@ -24,7 +24,7 @@ export const uploadFileService = async (
     }),
   );
 
-  const url = await getSignedFileUrlService(key, 3600);
+  const url = getPublicFileUrlService(key);
 
   return { key, url };
 };
@@ -38,11 +38,21 @@ export const deleteFileService = async (key: string): Promise<void> => {
   );
 };
 
+export const getPublicFileUrlService = (key: string): string => {
+  const bucketUrl = env.AWS_BUCKET_URL?.replace(/\/$/, "") ?? "";
+
+  if (!bucketUrl) {
+    return `https://${env.AWS_BUCKET_NAME}.s3.${env.AWS_BUCKET_REGION}.amazonaws.com/${encodeURIComponent(key)}`;
+  }
+
+  return `${bucketUrl}/${encodeURIComponent(key)}`;
+};
+
 export const getSignedFileUrlService = async (
   key: string,
   expiresIn = 3600,
 ): Promise<string> => {
-  const url =  await getSignedUrl(
+  const url = await getSignedUrl(
     s3Client,
     new GetObjectCommand({
       Bucket: env.AWS_BUCKET_NAME,
@@ -57,4 +67,3 @@ export const getSignedFileUrlService = async (
 
   return url;
 };
-

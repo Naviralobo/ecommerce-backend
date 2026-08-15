@@ -10,7 +10,7 @@ import {
 } from "../repositories/product.repository";
 import { AppError } from "../utils/AppError";
 import { ROLES } from "../constants/roles";
-import { getSignedFileUrlService } from "./upload.service";
+import { getPublicFileUrlService } from "./upload.service";
 
 interface ProductQuery {
   search?: string;
@@ -170,7 +170,5 @@ export const decreaseProductStockService = async (
 };
 
 export const getSignedImageUrls = async (keys: string[]): Promise<string[]> => {
-  return Promise.all(keys.map(getSignedFileUrlService));
-  //The above file is equivalent to keys.map(key=>getSignedFileUrlService(key))
-  //The above method works as map passes each key as the first argument.
+  return keys.map((key) => getPublicFileUrlService(key));
 };
