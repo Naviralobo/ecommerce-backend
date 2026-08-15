@@ -38,8 +38,8 @@ export const removeProductFromWishlistService = async (
 ) => {
   const wishlist = await getWishlistService(userId);
 
-  wishlist.products = wishlist.products.filter(
-    (id: any) => id.toString() !== productId,
+   wishlist.products = wishlist.products.filter(
+    (product: any) => product._id.toString() !== productId,
   );
 
   return saveWishlist(wishlist);
