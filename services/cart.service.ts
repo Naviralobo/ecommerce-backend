@@ -30,33 +30,55 @@ export const addToCartService = async (
   productId: string,
   quantity: number,
 ): Promise<ICart> => {
-  const cart = await getCartByUser(userId);
+  const cart = await getCartService(userId);
 
-  const actualCart = cart ?? (await createCart(userId));
-
-  const existingItem = cart?.items.find((item: any) =>
-    item.product._id
-      ? item.product._id.toString() === productId.toString()
-      : item.product.toString() === productId.toString(),
+  const existingItem = cart?.items.find(
+    (item: any) => item.product._id?.toString() === productId.toString(),
   );
 
   if (existingItem) {
-    if (quantity <= 0) {
-      removeItemFromCart(actualCart, productId);
-    } else {
-      existingItem.quantity = quantity;
-    }
-  } else if (quantity > 0) {
-    actualCart.items.push({
+    existingItem.quantity = quantity;
+  } else {
+    cart?.items.push({
       product: productId as any,
       quantity,
     });
   }
 
-  await saveCart(actualCart);
-
-  return (await getCartWithProducts(userId))!;
+  return saveCart(cart);
 };
+// export const addToCartService = async (
+//   userId: string,
+//   productId: string,
+//   quantity: number,
+// ): Promise<ICart> => {
+//   const cart = await getCartByUser(userId);
+
+//   const actualCart = cart ?? (await createCart(userId));
+
+//   const existingItem = cart?.items.find((item: any) =>
+//     item.product._id
+//       ? item.product._id.toString() === productId.toString()
+//       : item.product.toString() === productId.toString(),
+//   );
+
+//   if (existingItem) {
+//     if (quantity <= 0) {
+//       removeItemFromCart(actualCart, productId);
+//     } else {
+//       existingItem.quantity = quantity;
+//     }
+//   } else if (quantity > 0) {
+//     actualCart.items.push({
+//       product: productId as any,
+//       quantity,
+//     });
+//   }
+
+//   await saveCart(actualCart);
+
+//   return (await getCartWithProducts(userId))!;
+// };
 
 export const removeFromCartService = async (
   userId: string,
