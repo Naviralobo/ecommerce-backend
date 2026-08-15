@@ -20,5 +20,9 @@ export const saveCart = async (cart: any): Promise<any> => {
 };
 
 export const clearCart = async (userId: string) => {
-  return Cart.findOneAndUpdate({ user: userId }, { items: [] }, { new: true });
+  return Cart.findOneAndUpdate(
+    { user: userId },
+    { items: [] },
+    { returnDocument: "after" },
+  ).populate("items.product");
 };

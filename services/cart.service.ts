@@ -8,21 +8,19 @@ import {
 } from "../repositories/cart.repository";
 
 const removeItemFromCart = (cart: ICart, productId: string) => {
-  cart.items = cart.items.filter((item: any) =>
-    item.product._id
-      ? item.product._id.toString() !== productId
-      : item.product.toString() !== productId,
+  cart.items = cart.items.filter(
+    (item) => item.product.toString() !== productId,
   );
 };
 
-export const getCartService = async (userId: string) => {
+export const getCartService = async (userId: string): Promise<ICart> => {
   let cart = await getCartByUser(userId);
 
   if (!cart) {
     cart = await createCart(userId);
   }
 
-  return getCartWithProducts(userId);
+  return (await getCartWithProducts(userId))!;
 };
 
 export const addToCartService = async (
@@ -30,60 +28,46 @@ export const addToCartService = async (
   productId: string,
   quantity: number,
 ): Promise<ICart> => {
-  const cart = await getCartService(userId);
+  if (quantity < 1) {
+    throw new Error("Quantity must be at least 1");
+  }
+  const cart = await getCartByUser(userId);
 
-  const existingItem = cart?.items.find(
-    (item: any) => item.product._id?.toString() === productId.toString(),
+  if (!cart) {
+    const newCart = await createCart(userId);
+
+    newCart.items.push({
+      product: productId as any,
+      quantity,
+    });
+
+    await saveCart(newCart);
+
+    return (await getCartWithProducts(userId))!;
+  }
+
+  const existingItem = cart.items.find(
+    (item) => item.product.toString() === productId,
   );
 
   if (existingItem) {
     existingItem.quantity = quantity;
   } else {
-    cart?.items.push({
+    cart.items.push({
       product: productId as any,
       quantity,
     });
   }
 
-  return saveCart(cart);
+  await saveCart(cart);
+
+  return (await getCartWithProducts(userId))!;
 };
-// export const addToCartService = async (
-//   userId: string,
-//   productId: string,
-//   quantity: number,
-// ): Promise<ICart> => {
-//   const cart = await getCartByUser(userId);
-
-//   const actualCart = cart ?? (await createCart(userId));
-
-//   const existingItem = cart?.items.find((item: any) =>
-//     item.product._id
-//       ? item.product._id.toString() === productId.toString()
-//       : item.product.toString() === productId.toString(),
-//   );
-
-//   if (existingItem) {
-//     if (quantity <= 0) {
-//       removeItemFromCart(actualCart, productId);
-//     } else {
-//       existingItem.quantity = quantity;
-//     }
-//   } else if (quantity > 0) {
-//     actualCart.items.push({
-//       product: productId as any,
-//       quantity,
-//     });
-//   }
-
-//   await saveCart(actualCart);
-
-//   return (await getCartWithProducts(userId))!;
-// };
 
 export const removeFromCartService = async (
   userId: string,
   productId: string,
-) => {
+): Promise<ICart | null> => {
   const cart = await getCartByUser(userId);
 
   if (!cart) {
