@@ -1,5 +1,5 @@
 import Order from "../models/order.model";
-import { IOrder } from "../interfaces/order.interface";
+import { IOrder, OrderStatus } from "../interfaces/order.interface";
 
 export const createOrder = async (
   orderData: Partial<IOrder>,
@@ -7,19 +7,42 @@ export const createOrder = async (
   return Order.create(orderData);
 };
 
-export const getOrdersByUser = async (userId: string): Promise<IOrder[]> => {
-  return Order.find({ user: userId })
-    .populate("address")
-    .populate("items.product");
+export const getOrdersByUser = async (
+  userId: string,
+): Promise<IOrder[]> => {
+  return Order.find({
+    user: userId,
+  })
+    .populate("items.product")
+    .sort({ createdAt: -1 });
 };
 
-export const getOrderById = async (orderId: string): Promise<IOrder | null> => {
-  return Order.findById(orderId).populate("address").populate("items.product");
+export const getOrderById = async (
+  orderId: string,
+): Promise<IOrder | null> => {
+  return Order.findById(orderId).populate("items.product");
+};
+
+export const getOrderByIdForUser = async (
+  orderId: string,
+  userId: string,
+): Promise<IOrder | null> => {
+  return Order.findOne({
+    _id: orderId,
+    user: userId,
+  }).populate("items.product");
+};
+
+export const getAllOrders = async (): Promise<IOrder[]> => {
+  return Order.find()
+    .populate("user", "name email")
+    .populate("items.product")
+    .sort({ createdAt: -1 });
 };
 
 export const updateOrderStatus = async (
   orderId: string,
-  status: string,
+  status: OrderStatus,
 ): Promise<IOrder | null> => {
   return Order.findByIdAndUpdate(
     orderId,
@@ -28,18 +51,7 @@ export const updateOrderStatus = async (
       new: true,
       runValidators: true,
     },
-  );
-};
-
-export const hasPurchasedProduct = async (
-  userId: string,
-  productId: string,
-): Promise<boolean> => {
-  const order = await Order.findOne({
-    user: userId,
-    status: "delivered",
-    "items.product": productId,
-  });
-
-  return !!order;
+  )
+    .populate("user", "name email")
+    .populate("items.product");
 };

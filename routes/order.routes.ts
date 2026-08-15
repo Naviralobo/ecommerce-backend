@@ -2,30 +2,46 @@ import { Router } from "express";
 import {
   createOrder,
   getMyOrders,
+  getMyOrder,
+  getAllOrders,
   getOrder,
   updateOrderStatus,
 } from "../controllers/order.controller";
 import { protect, authorize } from "../middleware/auth.middleware";
 import { ROLES } from "../constants/roles";
-import { validate } from "../middleware/validate.middleware";
-import {
-  createOrderSchema,
-  updateOrderSchema,
-} from "../validations/order.validation";
 
 const router = Router();
 
-router.post("/", protect, validate(createOrderSchema), createOrder);
+/*
+ * Customer
+ */
+router.post("/", protect, createOrder);
 
-router.get("/", protect, getMyOrders);
+router.get("/my-orders", protect, getMyOrders);
 
-router.get("/:id", protect, getOrder);
+router.get("/my-orders/:id", protect, getMyOrder);
 
-router.put(
-  "/:id/status",
+/*
+ * Admin
+ */
+router.get(
+  "/admin/all",
   protect,
   authorize(ROLES.ADMIN),
-  validate(updateOrderSchema),
+  getAllOrders,
+);
+
+router.get(
+  "/admin/:id",
+  protect,
+  authorize(ROLES.ADMIN),
+  getOrder,
+);
+
+router.patch(
+  "/admin/:id/status",
+  protect,
+  authorize(ROLES.ADMIN),
   updateOrderStatus,
 );
 

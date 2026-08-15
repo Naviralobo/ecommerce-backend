@@ -1,70 +1,118 @@
-import { Types } from "mongoose";
-import { IOrder } from "../interfaces/order.interface";
 import { AppError } from "../utils/AppError";
 import {
   createOrder,
-  getOrdersByUser,
+  getAllOrders,
   getOrderById,
+  getOrderByIdForUser,
+  getOrdersByUser,
   updateOrderStatus,
 } from "../repositories/order.repository";
-import { getCartService } from "./cart.service";
-import { clearCart } from "../repositories/cart.repository";
-import { getAddressById } from "../repositories/address.repository";
-import { ROLES } from "../constants/roles";
-import { decreaseProductStockService } from "./product.service";
+import { getCartByUser, clearCart } from "../repositories/cart.repository";
+import { getProductById, updateProduct } from "../repositories/product.repository";
+import {
+  IOrder,
+  IShippingAddress,
+  OrderStatus,
+} from "../interfaces/order.interface";
 
 export const createOrderService = async (
   userId: string,
-  addressId: string,
+  shippingAddress: IShippingAddress,
 ): Promise<IOrder> => {
-  const cart = await getCartService(userId);
+  const cart = await getCartByUser(userId);
 
-  if (cart.items.length === 0) {
-    throw new AppError("Cart is empty", 400);
+  if (!cart || cart.items.length === 0) {
+    throw new AppError("Your cart is empty", 400);
   }
 
-  const address = await getAddressById(addressId);
-
-  if (!address) {
-    throw new AppError("Address not found", 404);
-  }
-
+  const orderItems = [];
   let totalAmount = 0;
 
-  const items = cart.items.map((item: any) => {
-    const price = item.product.price;
+  for (const cartItem of cart.items) {
+    const productId = cartItem.product.toString();
 
-    totalAmount += price * item.quantity;
+    const product = await getProductById(productId);
 
-    return {
-      product: item.product._id,
-      quantity: item.quantity,
-      price,
-    };
-  });
-  for (const item of items) {
-    await decreaseProductStockService(item.product.toString(), item.quantity);
+    if (!product) {
+      throw new AppError("One or more products no longer exist", 404);
+    }
+
+    if (product.stock < cartItem.quantity) {
+      throw new AppError(
+        `Insufficient stock for ${product.name}`,
+        400,
+      );
+    }
+
+    const itemTotal = product.price * cartItem.quantity;
+
+    totalAmount += itemTotal;
+
+    orderItems.push({
+      product: product._id,
+      name: product.name,
+      price: product.price,
+      quantity: cartItem.quantity,
+      image: product.images[0] ?? "",
+    });
   }
+
   const order = await createOrder({
-    user: new Types.ObjectId(userId),
-    address: new Types.ObjectId(addressId),
-    items,
+    user: userId as any,
+    items: orderItems,
     totalAmount,
+    shippingAddress,
+    status: OrderStatus.PENDING,
   });
 
+  /*
+   * Reduce stock only after the order has been created.
+   */
+  for (const cartItem of cart.items) {
+    const productId = cartItem.product.toString();
+
+    const product = await getProductById(productId);
+
+    if (!product) {
+      continue;
+    }
+
+    product.stock -= cartItem.quantity;
+
+    await updateProduct(productId, {
+      stock: product.stock,
+    } as any);
+  }
+
+  /*
+   * Clear the cart after successful order creation.
+   */
   await clearCart(userId);
 
   return order;
 };
 
-export const getMyOrdersService = async (userId: string): Promise<IOrder[]> => {
+export const getMyOrdersService = async (
+  userId: string,
+): Promise<IOrder[]> => {
   return getOrdersByUser(userId);
 };
 
-export const getOrderByIdService = async (
+export const getMyOrderService = async (
   orderId: string,
   userId: string,
-  role: string,
+): Promise<IOrder> => {
+  const order = await getOrderByIdForUser(orderId, userId);
+
+  if (!order) {
+    throw new AppError("Order not found", 404);
+  }
+
+  return order;
+};
+
+export const getOrderService = async (
+  orderId: string,
 ): Promise<IOrder> => {
   const order = await getOrderById(orderId);
 
@@ -72,16 +120,16 @@ export const getOrderByIdService = async (
     throw new AppError("Order not found", 404);
   }
 
-  if (role !== ROLES.ADMIN && order.user.toString() !== userId) {
-    throw new AppError("Unauthorized", 403);
-  }
-
   return order;
+};
+
+export const getAllOrdersService = async (): Promise<IOrder[]> => {
+  return getAllOrders();
 };
 
 export const updateOrderStatusService = async (
   orderId: string,
-  status: string,
+  status: OrderStatus,
 ): Promise<IOrder> => {
   const order = await updateOrderStatus(orderId, status);
 
