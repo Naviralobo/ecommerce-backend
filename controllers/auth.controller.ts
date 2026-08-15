@@ -26,7 +26,7 @@ export const login = asyncHandler(async (req, res) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
@@ -63,8 +63,8 @@ export const refreshToken = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (_req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: false, //secure: env.NODE_ENV === "production" is best to be used in production
-    sameSite: "lax",
+    secure: true, //secure: env.NODE_ENV === "production" is best to be used in production
+    sameSite: "none",
   });
 
   res.status(200).json(new ApiResponse(true, "Logged out successfully", null));
