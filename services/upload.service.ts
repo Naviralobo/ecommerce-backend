@@ -12,7 +12,7 @@ import { env } from "../config/env";
 
 export const uploadFileService = async (
   file: Express.Multer.File,
-): Promise<{ key: string }> => {
+): Promise<{ key: string; url: string }> => {
   const key = `${randomUUID()}-${file.originalname}`;
 
   await s3Client.send(
@@ -24,7 +24,9 @@ export const uploadFileService = async (
     }),
   );
 
-  return { key };
+  const url = await getSignedFileUrlService(key, 3600);
+
+  return { key, url };
 };
 
 export const deleteFileService = async (key: string): Promise<void> => {
