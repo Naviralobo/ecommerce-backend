@@ -36,6 +36,11 @@ router.put(
   updateProduct,
 );
 
-router.delete("/:id", deleteProduct);
+router.delete(
+  "/:id",
+  protect,
+  authorize(ROLES.SELLER, ROLES.ADMIN),
+  deleteProduct,
+);
 
 export default router;
