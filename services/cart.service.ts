@@ -8,8 +8,10 @@ import {
 } from "../repositories/cart.repository";
 
 const removeItemFromCart = (cart: ICart, productId: string) => {
-  cart.items = cart.items.filter(
-    (item: any) => (item.product._id ?? item.product).toString() !== productId,
+  cart.items = cart.items.filter((item: any) =>
+    item.product._id
+      ? item.product._id.toString() !== productId
+      : item.product.toString() !== productId,
   );
 };
 
@@ -32,8 +34,10 @@ export const addToCartService = async (
 
   const actualCart = cart ?? (await createCart(userId));
 
-  const existingItem = actualCart.items.find(
-    (item) => item.product.toString() === productId,
+  const existingItem = cart?.items.find((item: any) =>
+    item.product._id
+      ? item.product._id.toString() === productId.toString()
+      : item.product.toString() === productId.toString(),
   );
 
   if (existingItem) {
