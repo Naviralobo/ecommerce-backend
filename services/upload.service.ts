@@ -42,7 +42,7 @@ export const getSignedFileUrlService = async (
   key: string,
   expiresIn = 3600,
 ): Promise<string> => {
-  const url =  getSignedUrl(
+  const url =  await getSignedUrl(
     s3Client,
     new GetObjectCommand({
       Bucket: env.AWS_BUCKET_NAME,
